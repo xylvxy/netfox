@@ -6,11 +6,11 @@
 
 CAttemperEngineSink::CAttemperEngineSink()
 {
-	//ÉèÖÃ±äÁ¿
+	//è®¾ç½®å˜é‡
 	m_pInitParamter=NULL;
 	m_pBindParameter=NULL;
 
-	//½Ó¿Ú±äÁ¿
+	//æ¥å£å˜é‡
 	m_pITimerEngine=NULL;
 	m_pIDataBaseEngine=NULL;
 	m_pITCPNetworkEngine=NULL;
@@ -22,7 +22,7 @@ CAttemperEngineSink::~CAttemperEngineSink()
 {
 }
 
-//½Ó¿Ú²éÑ¯
+//æ¥å£æŸ¥è¯¢
 void * __cdecl CAttemperEngineSink::QueryInterface(const IID & Guid, DWORD dwQueryVer)
 {
 	QUERYINTERFACE(IAttemperEngineSink,Guid,dwQueryVer);
@@ -30,21 +30,21 @@ void * __cdecl CAttemperEngineSink::QueryInterface(const IID & Guid, DWORD dwQue
 	return NULL;
 }
 
-//µ÷¶ÈÄ£¿éÆô¶¯
+//è°ƒåº¦æ¨¡å—å¯åŠ¨
 bool __cdecl CAttemperEngineSink::OnAttemperEngineStart(IUnknownEx * pIUnknownEx)
 {
-	//°ó¶¨²ÎÊı
+	//ç»‘å®šå‚æ•°
 	m_pBindParameter=new tagBindParameter[m_pInitParamter->m_wMaxConnect];
 	ZeroMemory(m_pBindParameter,sizeof(tagBindParameter)*m_pInitParamter->m_wMaxConnect);
 
-	//´´½¨×é¼ş
+	//åˆ›å»ºç»„ä»¶
 	if ((m_ServerListCenter.GetInterface()==NULL)&&(m_ServerListCenter.CreateInstance()==false))
 	{
-		CTraceService::TraceString(TEXT("ÖĞĞÄ·şÎñÆ÷ÁĞ±í×é¼ş´´½¨Ê§°Ü"),TraceLevel_Exception);
+		CTraceService::TraceString(TEXT("ä¸­å¿ƒæœåŠ¡å™¨åˆ—è¡¨ç»„ä»¶åˆ›å»ºå¤±è´¥"),TraceLevel_Exception);
 		return false;
 	}
 
-	//¼ÓÔØÁĞ±í
+	//åŠ è½½åˆ—è¡¨
 	tagDataBaseInfo DataBaseInfo;
 	DataBaseInfo.wDataBasePort=m_pInitParamter->m_wServerDataBasePort;
 	DataBaseInfo.dwDataBaseAddr=inet_addr(m_pInitParamter->m_szServerDataBaseAddr);
@@ -53,25 +53,25 @@ bool __cdecl CAttemperEngineSink::OnAttemperEngineStart(IUnknownEx * pIUnknownEx
 	lstrcpyn(DataBaseInfo.szDataBaseName,m_pInitParamter->m_szServerDataBaseName,CountArray(DataBaseInfo.szDataBaseName));
 	if (m_ServerListCenter->LoadServerList(DataBaseInfo)==false) 
 	{
-		CTraceService::TraceString(TEXT("ÓÎÏ·ÁĞ±í¼ÓÔØÊ§°Ü"),TraceLevel_Exception);
+		CTraceService::TraceString(TEXT("æ¸¸æˆåˆ—è¡¨åŠ è½½å¤±è´¥"),TraceLevel_Exception);
 		return false;
 	}
 
 	return true;
 }
 
-//µ÷¶ÈÄ£¿é¹Ø±Õ
+//è°ƒåº¦æ¨¡å—å…³é—­
 bool __cdecl CAttemperEngineSink::OnAttemperEngineStop(IUnknownEx * pIUnknownEx)
 {
-	//ÉèÖÃ±äÁ¿
+	//è®¾ç½®å˜é‡
 	m_pITimerEngine=NULL;
 	m_pIDataBaseEngine=NULL;
 	m_pITCPNetworkEngine=NULL;
 
-	//É¾³ıÊı¾İ
+	//åˆ é™¤æ•°æ®
 	SafeDeleteArray(m_pBindParameter);
 
-	//ÖØÖÃÁĞ±í
+	//é‡ç½®åˆ—è¡¨
 	if (m_ServerListCenter.GetInterface()!=NULL)
 	{
 		m_ServerListCenter->ResetServerList();
@@ -80,18 +80,18 @@ bool __cdecl CAttemperEngineSink::OnAttemperEngineStop(IUnknownEx * pIUnknownEx)
 	return true;
 }
 
-//Ó¦´ğÊÂ¼ş
+//åº”ç­”äº‹ä»¶
 bool __cdecl CAttemperEngineSink::OnEventTCPNetworkBind(DWORD dwClientIP, DWORD dwSocketID)
 {
-	//»ñÈ¡Ë÷Òı
+	//è·å–ç´¢å¼•
 	ASSERT(LOWORD(dwSocketID)<m_pInitParamter->m_wMaxConnect);
 	if (LOWORD(dwSocketID)>=m_pInitParamter->m_wMaxConnect) return false;
 
-	//±äÁ¿¶¨Òå
+	//å˜é‡å®šä¹‰
 	WORD wBindIndex=LOWORD(dwSocketID);
 	tagBindParameter * pBindParameter=(m_pBindParameter+wBindIndex);
 
-	//ÉèÖÃ±äÁ¿
+	//è®¾ç½®å˜é‡
 	pBindParameter->dwSocketID=dwSocketID;
 	pBindParameter->dwClientIP=dwClientIP;
 	pBindParameter->dwActiveTime=(DWORD)time(NULL);
@@ -99,26 +99,26 @@ bool __cdecl CAttemperEngineSink::OnEventTCPNetworkBind(DWORD dwClientIP, DWORD 
 	return true;
 }
 
-//¹Ø±ÕÊÂ¼ş
+//å…³é—­äº‹ä»¶
 bool __cdecl CAttemperEngineSink::OnEventTCPNetworkShut(DWORD dwClientIP, DWORD dwActiveTime, DWORD dwSocketID)
 {
-	//Çå³ıĞÅÏ¢
+	//æ¸…é™¤ä¿¡æ¯
 	WORD wBindIndex=LOWORD(dwSocketID);
 	ZeroMemory((m_pBindParameter+wBindIndex),sizeof(tagBindParameter));
 
 	return true;
 }
 
-//¶ÁÈ¡ÊÂ¼ş
+//è¯»å–äº‹ä»¶
 bool __cdecl CAttemperEngineSink::OnEventTCPNetworkRead(CMD_Command Command, VOID * pData, WORD wDataSize, DWORD dwSocketID)
 {
 	switch (Command.wMainCmdID)
 	{
-	case MDM_CS_SERVER_LIST:		//ÁĞ±íÏûÏ¢
+	case MDM_CS_SERVER_LIST:		//åˆ—è¡¨æ¶ˆæ¯
 		{
 			return OnSocketMainServerList(Command.wSubCmdID,pData,wDataSize,dwSocketID);
 		}
-	case MDM_CS_SERVER_MANAGER:		//·¿¼ä¹ÜÀí
+	case MDM_CS_SERVER_MANAGER:		//æˆ¿é—´ç®¡ç†
 		{
 			return OnSocketMainServerManager(Command.wSubCmdID,pData,wDataSize,dwSocketID);
 		}
@@ -127,25 +127,25 @@ bool __cdecl CAttemperEngineSink::OnEventTCPNetworkRead(CMD_Command Command, VOI
 	return true;
 }
 
-//ÁĞ±íÏûÏ¢´¦Àí
+//åˆ—è¡¨æ¶ˆæ¯å¤„ç†
 bool CAttemperEngineSink::OnSocketMainServerList(WORD wSubCmdID, VOID * pData, WORD wDataSize, DWORD dwSocketID)
 {
 	switch (wSubCmdID)
 	{
-	case SUB_CS_GET_SERVER_LIST:	//»ñÈ¡ÁĞ±í
+	case SUB_CS_GET_SERVER_LIST:	//è·å–åˆ—è¡¨
 		{
-			//±äÁ¿¶¨Òå
+			//å˜é‡å®šä¹‰
 			CMD_CS_ListInfo ListInfo;
 			ZeroMemory(&ListInfo,sizeof(ListInfo));
 
-			//ÉèÖÃ±äÁ¿
+			//è®¾ç½®å˜é‡
 			ListInfo.dwTypeCount=m_ServerListCenter->GetGameTypeCount();
 			ListInfo.dwKindCount=m_ServerListCenter->GetGameKindCount();
 			ListInfo.dwServerCount=m_ServerListCenter->GetGameServerCount();
 			ListInfo.dwStationCount=m_ServerListCenter->GetGameStationCount();
 			m_pITCPNetworkEngine->SendData(dwSocketID,MDM_CS_SERVER_LIST,SUB_CS_LIST_INFO,&ListInfo,sizeof(ListInfo));
 
-			//ÀàĞÍĞÅÏ¢
+			//ç±»å‹ä¿¡æ¯
 			POSITION Pos=NULL;
 			WORD wSendSize=0L;
 			BYTE cbBuffer[SOCKET_PACKET];
@@ -162,7 +162,7 @@ bool CAttemperEngineSink::OnSocketMainServerList(WORD wSubCmdID, VOID * pData, W
 			}
 			if (wSendSize>0) m_pITCPNetworkEngine->SendData(dwSocketID,MDM_CS_SERVER_LIST,SUB_CS_LIST_TYPE,cbBuffer,wSendSize);
 
-			//ÖÖÀàĞÅÏ¢
+			//ç§ç±»ä¿¡æ¯
 			Pos=NULL;
 			wSendSize=0L;
 			for (DWORD i=0;i<ListInfo.dwKindCount;i++)
@@ -178,7 +178,7 @@ bool CAttemperEngineSink::OnSocketMainServerList(WORD wSubCmdID, VOID * pData, W
 			}
 			if (wSendSize>0) m_pITCPNetworkEngine->SendData(dwSocketID,MDM_CS_SERVER_LIST,SUB_CS_LIST_KIND,cbBuffer,wSendSize);
 
-			//Õ¾µãĞÅÏ¢
+			//ç«™ç‚¹ä¿¡æ¯
 			Pos=NULL;
 			wSendSize=0L;
 			for (DWORD i=0;i<ListInfo.dwStationCount;i++)
@@ -194,7 +194,7 @@ bool CAttemperEngineSink::OnSocketMainServerList(WORD wSubCmdID, VOID * pData, W
 			}
 			if (wSendSize>0) m_pITCPNetworkEngine->SendData(dwSocketID,MDM_CS_SERVER_LIST,SUB_CS_LIST_STATION,cbBuffer,wSendSize);
 
-			//·¿¼äĞÅÏ¢
+			//æˆ¿é—´ä¿¡æ¯
 			Pos=NULL;
 			wSendSize=0L;
 			for (DWORD i=0;i<ListInfo.dwServerCount;i++)
@@ -210,7 +210,7 @@ bool CAttemperEngineSink::OnSocketMainServerList(WORD wSubCmdID, VOID * pData, W
 			}
 			if (wSendSize>0) m_pITCPNetworkEngine->SendData(dwSocketID,MDM_CS_SERVER_LIST,SUB_CS_LIST_SERVER,cbBuffer,wSendSize);
 
-			//·¢ËÍÍê³É
+			//å‘é€å®Œæˆ
 			m_pITCPNetworkEngine->SendData(dwSocketID,MDM_CS_SERVER_LIST,SUB_CS_LIST_FINISH);
 
 			return true;	
@@ -220,18 +220,18 @@ bool CAttemperEngineSink::OnSocketMainServerList(WORD wSubCmdID, VOID * pData, W
 	return false;
 }
 
-//·¿¼äÏûÏ¢´¦Àí
+//æˆ¿é—´æ¶ˆæ¯å¤„ç†
 bool CAttemperEngineSink::OnSocketMainServerManager(WORD wSubCmdID, VOID * pData, WORD wDataSize, DWORD dwSocketID)
 {
 	switch (wSubCmdID)
 	{
-	case SUB_CS_REG_GAME_SERVER:		//·¿¼ä×¢²á
+	case SUB_CS_REG_GAME_SERVER:		//æˆ¿é—´æ³¨å†Œ
 		{
-			//Ğ§Ñé²ÎÊı
+			//æ•ˆéªŒå‚æ•°
 			ASSERT(wDataSize==sizeof(CMD_CS_RegGameServer));
 			if (wDataSize!=sizeof(CMD_CS_RegGameServer)) return false;
 
-			//ÏûÏ¢´¦Àí
+			//æ¶ˆæ¯å¤„ç†
 			CMD_CS_RegGameServer * pRegGameServer=(CMD_CS_RegGameServer *)pData;
 			tagGameServer * pGameServer=&pRegGameServer->GameServer;
 			tagGameServerItem * pGameServerItem=m_ServerListCenter->SearchGameServer(pGameServer->wKindID,pGameServer->wServerID);
@@ -244,25 +244,25 @@ bool CAttemperEngineSink::OnSocketMainServerManager(WORD wSubCmdID, VOID * pData
 
 			return true;
 		}
-	case SUB_CS_UNREG_GAME_SERVER:		//×¢Ïú·¿¼ä
+	case SUB_CS_UNREG_GAME_SERVER:		//æ³¨é”€æˆ¿é—´
 		{
-			//Ğ§Ñé²ÎÊı
+			//æ•ˆéªŒå‚æ•°
 			ASSERT(wDataSize==sizeof(CMD_CS_UnRegGameServer));
 			if (wDataSize!=sizeof(CMD_CS_UnRegGameServer)) return false;
 
-			//ÏûÏ¢´¦Àí
+			//æ¶ˆæ¯å¤„ç†
 			CMD_CS_UnRegGameServer * pUnRegGameServer=(CMD_CS_UnRegGameServer *)pData;
 			m_ServerListCenter->DeleteGameServer(pUnRegGameServer->wKindID,pUnRegGameServer->wServerID);
 
 			return true;
 		}
-	case SUB_CS_SERVER_ONLINE_COUNT:	//¸üĞÂÈËÊı
+	case SUB_CS_SERVER_ONLINE_COUNT:	//æ›´æ–°äººæ•°
 		{
-			//Ğ§Ñé²ÎÊı
+			//æ•ˆéªŒå‚æ•°
 			ASSERT(wDataSize==sizeof(CMD_CS_ServerOnLineCount));
 			if (wDataSize!=sizeof(CMD_CS_ServerOnLineCount)) return false;
 
-			//ÏûÏ¢´¦Àí
+			//æ¶ˆæ¯å¤„ç†
 			CMD_CS_ServerOnLineCount * pServerOnLineCount=(CMD_CS_ServerOnLineCount *)pData;
 			WORD wKindID=pServerOnLineCount->wKindID;
 			WORD wServerID=pServerOnLineCount->wServerID;
